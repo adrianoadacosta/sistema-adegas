@@ -4,6 +4,8 @@ import { supabase } from './supabaseClient'
 function App() {
   const [nome, setNome] = useState('')
   const [clientes, setClientes] = useState([])
+  const [telefone, setTelefone] = useState('')
+  const [email, setEmail] = useState('')
 
   // 🔹 Buscar clientes
   async function buscarClientes() {
@@ -27,13 +29,15 @@ function App() {
   async function salvarCliente() {
     const { error } = await supabase
       .from('clientes')
-      .insert([{ nome }])
+      .insert([{ nome, telefone, email }])
 
     if (error) {
       alert('Erro ao salvar')
     } else {
       alert('Cliente salvo!')
       setNome('')
+      setTelefone('')
+      setEmail('')
       buscarClientes() // atualiza lista
     }
   }
@@ -48,6 +52,18 @@ function App() {
         onChange={(e) => setNome(e.target.value)}
       />
 
+      <input
+        placeholder="Telefone"
+        value={telefone}
+        onChange={(e) => setTelefone(e.target.value)}
+      />
+
+      <input
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+
       <button onClick={salvarCliente}>
         Salvar
       </button>
@@ -57,7 +73,7 @@ function App() {
       <ul>
         {clientes.map((cliente) => (
           <li key={cliente.id}>
-            {cliente.nome}
+            {cliente.nome} - {cliente.telefone} - {cliente.email}
           </li>
         ))}
       </ul>
