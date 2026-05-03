@@ -42,6 +42,20 @@ function App() {
     }
   }
 
+  async function deletarCliente(id) {
+  const { error } = await supabase
+    .from('clientes')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    console.log(error)
+    alert('Erro ao deletar')
+  } else {
+    buscarClientes() // atualiza lista
+  }
+}
+
   return (
     <div>
       <h1>Sistema de Adegas</h1>
@@ -74,6 +88,10 @@ function App() {
         {clientes.map((cliente) => (
           <li key={cliente.id}>
             {cliente.nome} - {cliente.telefone} - {cliente.email}
+  
+            <button onClick={() => deletarCliente(cliente.id)}>
+              Deletar
+            </button>
           </li>
         ))}
       </ul>
