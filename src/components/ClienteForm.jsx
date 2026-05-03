@@ -20,7 +20,7 @@ function ClienteForm({ onSalvar, clienteEditando }) {
   }
 
   return (
-    <div>
+    <div className="form">
       <input
         placeholder="Nome"
         value={nome}
@@ -39,8 +39,8 @@ function ClienteForm({ onSalvar, clienteEditando }) {
         onChange={(e) => setEmail(e.target.value)}
       />
 
-      <button onClick={handleSubmit}>
-        {clienteEditando ? 'Atualizar' : 'Salvar'}
+      <button className="btn-primary" onClick={handleSubmit}>
+            {clienteEditando ? 'Atualizar' : 'Salvar'}
       </button>
     </div>
   )

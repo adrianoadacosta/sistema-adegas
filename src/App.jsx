@@ -1,3 +1,5 @@
+import './App.css'
+
 import { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
 import ClienteForm from './components/ClienteForm'
@@ -73,23 +75,23 @@ function App() {
   }
 
   return (
-    <div>
-      <h1>Sistema de Adegas</h1>
+  <div className="container">
+    <h1>Sistema de Adegas</h1>
 
-      <ClienteForm
-        onSalvar={salvarCliente}
-        clienteEditando={clienteEditando}
-      />
+    <ClienteForm
+      onSalvar={salvarCliente}
+      clienteEditando={clienteEditando}
+    />
 
-      <h2>Clientes cadastrados:</h2>
+    <h2>Clientes cadastrados:</h2>
 
-      <ClienteList
-        clientes={clientes}
-        onDelete={deletarCliente}
-        onEdit={editarCliente}
-      />
-    </div>
-  )
+    <ClienteList
+      clientes={clientes}
+      onDelete={deletarCliente}
+      onEdit={editarCliente}
+    />
+  </div>
+)
 }
 
 export default App

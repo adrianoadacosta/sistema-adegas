@@ -1,17 +1,23 @@
 function ClienteList({ clientes, onDelete, onEdit }) {
   return (
-    <ul>
+    <ul className="cliente-list">
       {clientes.map((cliente) => (
-        <li key={cliente.id}>
-          {cliente.nome} - {cliente.telefone} - {cliente.email}
+        <li className="cliente-card" key={cliente.id}>
+          <div className="cliente-info">
+            <strong>{cliente.nome}</strong><br />
+            {cliente.telefone}<br />
+            {cliente.email}
+          </div>
 
-          <button onClick={() => onEdit(cliente)}>
-            Editar
-          </button>
+          <div className="cliente-actions">
+            <button className="btn-edit" onClick={() => onEdit(cliente)}>
+              Editar
+            </button>
 
-          <button onClick={() => onDelete(cliente.id)}>
-            Deletar
-          </button>
+            <button className="btn-danger" onClick={() => onDelete(cliente.id)}>
+              Deletar
+            </button>
+          </div>
         </li>
       ))}
     </ul>
