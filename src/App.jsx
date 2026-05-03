@@ -6,6 +6,7 @@ function App() {
   const [clientes, setClientes] = useState([])
   const [telefone, setTelefone] = useState('')
   const [email, setEmail] = useState('')
+  const [clienteEditando, setClienteEditando] = useState(null)
 
   // 🔹 Buscar clientes
   async function buscarClientes() {
@@ -27,6 +28,21 @@ function App() {
 
   // 🔹 Salvar cliente
   async function salvarCliente() {
+  if (clienteEditando) {
+    // UPDATE
+    const { error } = await supabase
+      .from('clientes')
+      .update({ nome, telefone, email })
+      .eq('id', clienteEditando)
+
+    if (error) {
+      alert('Erro ao atualizar')
+    } else {
+      alert('Cliente atualizado!')
+      setClienteEditando(null)
+    }
+  } else {
+    // INSERT
     const { error } = await supabase
       .from('clientes')
       .insert([{ nome, telefone, email }])
@@ -35,13 +51,24 @@ function App() {
       alert('Erro ao salvar')
     } else {
       alert('Cliente salvo!')
-      setNome('')
-      setTelefone('')
-      setEmail('')
-      buscarClientes() // atualiza lista
     }
   }
 
+  setNome('')
+  setTelefone('')
+  setEmail('')
+  buscarClientes()
+}
+
+     // 🔹 editar cliente
+    function editarCliente(cliente) {
+      setNome(cliente.nome)
+      setTelefone(cliente.telefone)
+      setEmail(cliente.email)
+      setClienteEditando(cliente.id)
+    }
+ 
+  // 🔹 deletar cliente
   async function deletarCliente(id) {
   const { error } = await supabase
     .from('clientes')
@@ -79,7 +106,7 @@ function App() {
       />
 
       <button onClick={salvarCliente}>
-        Salvar
+        {clienteEditando ? 'Atualizar' : 'Salvar'}
       </button>
 
       <h2>Clientes cadastrados:</h2>
@@ -91,6 +118,10 @@ function App() {
   
             <button onClick={() => deletarCliente(cliente.id)}>
               Deletar
+            </button>
+
+            <button onClick={() => editarCliente(cliente)}>
+              Editar
             </button>
           </li>
         ))}
