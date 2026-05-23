@@ -1,5 +1,7 @@
 import './App.css'
 import Home from './components/Home'
+import ArquitetoForm from './components/ArquitetoForm'
+import ArquitetoList from './components/ArquitetoList'
 
 import { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
@@ -10,6 +12,8 @@ function App() {
   const [clientes, setClientes] = useState([])
   const [clienteEditando, setClienteEditando] = useState(null)
   const [pagina, setPagina] = useState('home')
+  const [arquitetos, setArquitetos] = useState([])
+  const [arquitetoEditando, setArquitetoEditando] = useState(null)
 
   // 🔹 Buscar clientes
   async function buscarClientes() {
@@ -24,8 +28,21 @@ function App() {
     }
   }
 
+  async function buscarArquitetos() {
+    const { data, error } = await supabase
+      .from('arquitetos')
+      .select('*')
+
+    if (error) {
+      console.log(error)
+    } else {
+      setArquitetos(data)
+    }
+  }
+
   useEffect(() => {
     buscarClientes()
+    buscarArquitetos()
   }, [])
 
   // 🔹 Salvar (create + update)
@@ -57,6 +74,34 @@ function App() {
     buscarClientes()
   }
 
+  async function salvarArquiteto(dados) {
+    if (arquitetoEditando) {
+      const { error } = await supabase
+        .from('arquitetos')
+        .update(dados)
+        .eq('id', arquitetoEditando.id)
+
+      if (error) {
+        alert('Erro ao atualizar')
+      } else {
+        alert('Arquiteto atualizado!')
+        setArquitetoEditando(null)
+      }
+    } else {
+      const { error } = await supabase
+        .from('arquitetos')
+        .insert([dados])
+
+      if (error) {
+        alert('Erro ao salvar')
+      } else {
+        alert('Arquiteto salvo!')
+      }
+    }
+
+    buscarArquitetos()
+  }
+
   // 🔹 Deletar
   async function deletarCliente(id) {
     const { error } = await supabase
@@ -71,58 +116,90 @@ function App() {
     }
   }
 
+  async function deletarArquiteto(id) {
+    const { error } = await supabase
+      .from('arquitetos')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      alert('Erro ao deletar')
+    } else {
+      buscarArquitetos()
+    }
+  }
+
   // 🔹 Editar
   function editarCliente(cliente) {
     setClienteEditando(cliente)
   }
 
- return (
-  <div className="container">
-    {pagina === 'home' && (
-      <Home irPara={setPagina} />
-    )}
+  function editarArquiteto(arquiteto) {
+    setArquitetoEditando(arquiteto)
+  }
 
-    {pagina === 'clientes' && (
-      <>
-        <button onClick={() => setPagina('home')}>
-          ← Voltar
-        </button>
+  return (
+    <div className="container">
+      {pagina === 'home' && (
+        <Home irPara={setPagina} />
+      )}
 
-        <h1>Clientes</h1>
+      {pagina === 'clientes' && (
+        <>
+          <button onClick={() => setPagina('home')}>
+            ← Voltar
+          </button>
 
-        <ClienteForm
-          onSalvar={salvarCliente}
-          clienteEditando={clienteEditando}
-        />
+          <h1>Clientes</h1>
 
-        <h2>Clientes cadastrados:</h2>
+          <ClienteForm
+            onSalvar={salvarCliente}
+            clienteEditando={clienteEditando}
+          />
 
-        <ClienteList
-          clientes={clientes}
-          onDelete={deletarCliente}
-          onEdit={editarCliente}
-        />
-      </>
-    )}
+          <h2>Clientes cadastrados:</h2>
 
-    {pagina === 'arquitetos' && (
-      <>
-        <button onClick={() => setPagina('home')}>
-          ← Voltar
-        </button>
-        <h1>Arquitetos (em breve)</h1>
-      </>
-    )}
+          <ClienteList
+            clientes={clientes}
+            onDelete={deletarCliente}
+            onEdit={editarCliente}
+          />
+        </>
+      )}
 
-    {pagina === 'orcamentos' && (
-      <>
-        <button onClick={() => setPagina('home')}>
-          ← Voltar
-        </button>
-        <h1>Orçamentos (em breve)</h1>
-      </>
-    )}
-  </div>
+      {pagina === 'arquitetos' && (
+        <>
+          <button onClick={() => setPagina('home')}>
+            ← Voltar
+          </button>
+          <>
+            <h1>Arquitetos</h1>
+
+            <ArquitetoForm
+              onSalvar={salvarArquiteto}
+              arquitetoEditando={arquitetoEditando}
+            />
+
+            <h2>Arquitetos cadastrados:</h2>
+
+            <ArquitetoList
+              arquitetos={arquitetos}
+              onDelete={deletarArquiteto}
+              onEdit={editarArquiteto}
+            />
+          </>
+        </>
+      )}
+
+      {pagina === 'orcamentos' && (
+        <>
+          <button onClick={() => setPagina('home')}>
+            ← Voltar
+          </button>
+          <h1>Orçamentos (em breve)</h1>
+        </>
+      )}
+    </div>
   )
 }
 
