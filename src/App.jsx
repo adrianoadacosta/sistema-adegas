@@ -1,4 +1,5 @@
 import './App.css'
+import Home from './components/Home'
 
 import { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
@@ -8,6 +9,7 @@ import ClienteList from './components/ClienteList'
 function App() {
   const [clientes, setClientes] = useState([])
   const [clienteEditando, setClienteEditando] = useState(null)
+  const [pagina, setPagina] = useState('home')
 
   // 🔹 Buscar clientes
   async function buscarClientes() {
@@ -74,24 +76,54 @@ function App() {
     setClienteEditando(cliente)
   }
 
-  return (
+ return (
   <div className="container">
-    <h1>Sistema de Adegas</h1>
+    {pagina === 'home' && (
+      <Home irPara={setPagina} />
+    )}
 
-    <ClienteForm
-      onSalvar={salvarCliente}
-      clienteEditando={clienteEditando}
-    />
+    {pagina === 'clientes' && (
+      <>
+        <button onClick={() => setPagina('home')}>
+          ← Voltar
+        </button>
 
-    <h2>Clientes cadastrados:</h2>
+        <h1>Clientes</h1>
 
-    <ClienteList
-      clientes={clientes}
-      onDelete={deletarCliente}
-      onEdit={editarCliente}
-    />
+        <ClienteForm
+          onSalvar={salvarCliente}
+          clienteEditando={clienteEditando}
+        />
+
+        <h2>Clientes cadastrados:</h2>
+
+        <ClienteList
+          clientes={clientes}
+          onDelete={deletarCliente}
+          onEdit={editarCliente}
+        />
+      </>
+    )}
+
+    {pagina === 'arquitetos' && (
+      <>
+        <button onClick={() => setPagina('home')}>
+          ← Voltar
+        </button>
+        <h1>Arquitetos (em breve)</h1>
+      </>
+    )}
+
+    {pagina === 'orcamentos' && (
+      <>
+        <button onClick={() => setPagina('home')}>
+          ← Voltar
+        </button>
+        <h1>Orçamentos (em breve)</h1>
+      </>
+    )}
   </div>
-)
+  )
 }
 
 export default App
