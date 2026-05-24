@@ -71,8 +71,29 @@ function App() {
       if (error) {
         alert('Erro ao atualizar')
       } else {
+
+        await supabase
+          .from('clientes_arquitetos')
+          .delete()
+          .eq('cliente_id', clienteEditando.id)
+
+        if (arquitetoSelecionado) {
+          await supabase
+            .from('clientes_arquitetos')
+            .insert([
+              {
+                cliente_id: clienteEditando.id,
+                arquiteto_id: arquitetoSelecionado
+              }
+            ])
+        }
+
         alert('Cliente atualizado!')
+
         setClienteEditando(null)
+        setArquitetoSelecionado('')
+
+        buscarRelacoes()
       }
     } else {
       const { data, error } = await supabase
@@ -108,6 +129,7 @@ function App() {
     }
 
     buscarClientes()
+    buscarRelacoes()
   }
 
   async function salvarArquiteto(dados) {
@@ -144,6 +166,12 @@ function App() {
 
   // 🔹 Deletar
   async function deletarCliente(id) {
+
+    await supabase
+      .from('clientes_arquitetos')
+      .delete()
+      .eq('cliente_id', id)
+
     const { error } = await supabase
       .from('clientes')
       .delete()
@@ -153,6 +181,7 @@ function App() {
       alert('Erro ao deletar')
     } else {
       buscarClientes()
+      buscarRelacoes()
     }
   }
 
@@ -171,7 +200,16 @@ function App() {
 
   // 🔹 Editar
   function editarCliente(cliente) {
+
     setClienteEditando(cliente)
+
+    const relacaoCliente = relacoes.find(
+      (relacao) => relacao.cliente_id === cliente.id
+    )
+
+    if (relacaoCliente) {
+      setArquitetoSelecionado(relacaoCliente.arquiteto_id)
+    }
   }
 
   function editarArquiteto(arquiteto) {
