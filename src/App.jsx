@@ -43,16 +43,16 @@ function App() {
   }
 
   async function buscarRelacoes() {
-  const { data, error } = await supabase
-    .from('clientes_arquitetos')
-    .select('*')
+    const { data, error } = await supabase
+      .from('clientes_arquitetos')
+      .select('*')
 
-  if (error) {
-    console.log(error)
-  } else {
-    setRelacoes(data)
+    if (error) {
+      console.log(error)
+    } else {
+      setRelacoes(data)
+    }
   }
-}
 
   useEffect(() => {
     buscarClientes()
@@ -88,8 +88,6 @@ function App() {
         if (arquitetoSelecionado) {
           const clienteCriado = data[0]
 
-          console.log(clienteCriado.id)
-console.log(arquitetoSelecionado)
 
           const { error: relacaoError } = await supabase
             .from('clientes_arquitetos')
@@ -206,6 +204,8 @@ console.log(arquitetoSelecionado)
 
           <ClienteList
             clientes={clientes}
+            arquitetos={arquitetos}
+            relacoes={relacoes}
             onDelete={deletarCliente}
             onEdit={editarCliente}
           />
