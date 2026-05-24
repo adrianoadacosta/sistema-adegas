@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react'
 
-function ClienteForm({ onSalvar, clienteEditando }) {
+function ClienteForm({ onSalvar,
+  clienteEditando,
+  arquitetos,
+  arquitetoSelecionado,
+  setArquitetoSelecionado }) {
   const [nome, setNome] = useState(clienteEditando?.nome || '')
   const [telefone, setTelefone] = useState(clienteEditando?.telefone || '')
   const [email, setEmail] = useState(clienteEditando?.email || '')
@@ -13,7 +17,6 @@ function ClienteForm({ onSalvar, clienteEditando }) {
 
   function handleSubmit() {
     onSalvar({ nome, telefone, email })
-
     setNome('')
     setTelefone('')
     setEmail('')
@@ -39,8 +42,26 @@ function ClienteForm({ onSalvar, clienteEditando }) {
         onChange={(e) => setEmail(e.target.value)}
       />
 
+      <select
+        value={arquitetoSelecionado}
+        onChange={(e) => setArquitetoSelecionado(e.target.value)}
+      >
+        <option value="">
+          Selecione um arquiteto
+        </option>
+
+        {arquitetos.map((arquiteto) => (
+          <option
+            key={arquiteto.id}
+            value={arquiteto.id}
+          >
+            {arquiteto.nome}
+          </option>
+        ))}
+      </select>
+
       <button className="btn-primary" onClick={handleSubmit}>
-            {clienteEditando ? 'Atualizar' : 'Salvar'}
+        {clienteEditando ? 'Atualizar' : 'Salvar'}
       </button>
     </div>
   )

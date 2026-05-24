@@ -14,6 +14,8 @@ function App() {
   const [pagina, setPagina] = useState('home')
   const [arquitetos, setArquitetos] = useState([])
   const [arquitetoEditando, setArquitetoEditando] = useState(null)
+  const [arquitetoSelecionado, setArquitetoSelecionado] = useState('')
+  const [relacoes, setRelacoes] = useState([])
 
   // 🔹 Buscar clientes
   async function buscarClientes() {
@@ -40,9 +42,22 @@ function App() {
     }
   }
 
+  async function buscarRelacoes() {
+  const { data, error } = await supabase
+    .from('clientes_arquitetos')
+    .select('*')
+
+  if (error) {
+    console.log(error)
+  } else {
+    setRelacoes(data)
+  }
+}
+
   useEffect(() => {
     buscarClientes()
     buscarArquitetos()
+    buscarRelacoes()
   }, [])
 
   // 🔹 Salvar (create + update)
@@ -60,15 +75,38 @@ function App() {
         setClienteEditando(null)
       }
     } else {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('clientes')
         .insert([dados])
+        .select()
 
       if (error) {
         alert('Erro ao salvar')
       } else {
         alert('Cliente salvo!')
+
+        if (arquitetoSelecionado) {
+          const clienteCriado = data[0]
+
+          console.log(clienteCriado.id)
+console.log(arquitetoSelecionado)
+
+          const { error: relacaoError } = await supabase
+            .from('clientes_arquitetos')
+            .insert([
+              {
+                cliente_id: clienteCriado.id,
+                arquiteto_id: arquitetoSelecionado
+              }
+            ])
+
+          if (relacaoError) {
+            console.log(relacaoError)
+          }
+          setArquitetoSelecionado('')
+        }
       }
+
     }
 
     buscarClientes()
@@ -76,24 +114,28 @@ function App() {
 
   async function salvarArquiteto(dados) {
     if (arquitetoEditando) {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('arquitetos')
         .update(dados)
         .eq('id', arquitetoEditando.id)
+        .select()
 
       if (error) {
-        alert('Erro ao atualizar')
+        console.error('Erro ao atualizar arquiteto:', error)
+        alert('Erro ao atualizar: ' + (error.message || JSON.stringify(error)))
       } else {
         alert('Arquiteto atualizado!')
         setArquitetoEditando(null)
       }
     } else {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('arquitetos')
         .insert([dados])
+        .select()
 
       if (error) {
-        alert('Erro ao salvar')
+        console.error('Erro ao salvar arquiteto:', error)
+        alert('Erro ao salvar: ' + (error.message || JSON.stringify(error)))
       } else {
         alert('Arquiteto salvo!')
       }
@@ -155,6 +197,9 @@ function App() {
           <ClienteForm
             onSalvar={salvarCliente}
             clienteEditando={clienteEditando}
+            arquitetos={arquitetos}
+            arquitetoSelecionado={arquitetoSelecionado}
+            setArquitetoSelecionado={setArquitetoSelecionado}
           />
 
           <h2>Clientes cadastrados:</h2>

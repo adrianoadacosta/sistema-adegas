@@ -10,10 +10,15 @@ function ArquitetoForm({ onSalvar, arquitetoEditando }) {
       setNome(arquitetoEditando.nome)
       setTelefone(arquitetoEditando.telefone)
       setEmail(arquitetoEditando.email)
+    } else {
+      setNome('')
+      setTelefone('')
+      setEmail('')
     }
   }, [arquitetoEditando])
 
-  function handleSubmit() {
+  function handleSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault()
     onSalvar({ nome, telefone, email })
 
     setNome('')
@@ -22,7 +27,7 @@ function ArquitetoForm({ onSalvar, arquitetoEditando }) {
   }
 
   return (
-    <div className="form">
+    <form className="form" onSubmit={handleSubmit}>
       <input
         placeholder="Nome"
         value={nome}
@@ -41,10 +46,10 @@ function ArquitetoForm({ onSalvar, arquitetoEditando }) {
         onChange={(e) => setEmail(e.target.value)}
       />
 
-      <button className="btn-primary" onClick={handleSubmit}>
+      <button className="btn-primary" type="submit">
         {arquitetoEditando ? 'Atualizar' : 'Salvar'}
       </button>
-    </div>
+    </form>
   )
 }
 
